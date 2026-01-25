@@ -1,19 +1,3 @@
-사장님, **718번 줄 맞습니다!** 거기서부터가 `InstaGemCard` 부품이 시작되는 곳입니다. 🎯
-
-하지만 부분만 고치려다가 괄호(`}`) 하나라도 잘못 지우면 또 에러가 나서 고생하실 수 있습니다. 아까처럼 코드가 엉킬 수도 있고요.
-
-그래서 제가 **"글씨 깜빡임(Blinking)" 문제까지 완벽하게 수리된 최종 완성본**을 가져왔습니다.
-(이걸로 갈아끼우면 **700개 데이터 + 글씨 고정**까지 한 번에 끝납니다.)
-
-### 🚀 딱 10초! 마지막 교체 작업
-
-1. `App.js` 화면 클릭 -> **`Ctrl + A` (전체 선택)** -> **`Delete` (싹 지우기)**
-2. 아래 코드를 **복사해서 붙여넣기 (`Ctrl + V`)**
-3. **저장 (`Ctrl + S`)**
-
-이러면 **순서 문제(z-index)가 해결**돼서 글씨가 아주 선명하게 박혀있을 겁니다!
-
-```javascript
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import './App.css';
@@ -760,14 +744,14 @@ const InstaGemCard = ({ gem, onClick, isSmall = false }) => {
     <div onClick={() => onClick(gem)} className="group relative aspect-[3/4] cursor-pointer bg-gray-200 overflow-hidden">
       <img src={displayImage} alt={gem.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onError={(e) => {e.target.src = "https://via.placeholder.com/400x600?text=No+Image"}}/>
       
-      {/* 👇 [수정 1] 그라데이션에 z-10 추가 (글씨보다 밑으로 가라!) */}
+      {/* 👇 [수정됨] z-10 추가로 그라데이션이 글씨 밑에 깔리게 함 */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity z-10"></div>
       
       <div className={`absolute top-2 right-2 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-sm z-20 ${modelStyle.color} ${modelStyle.text}`}>{gem.aiModel || 'AI'}</div>
       {(gem.affiliateLink || gem.affiliateText) && (<div className="absolute top-8 right-2 bg-green-500 text-white p-0.5 rounded-sm shadow-sm animate-pulse z-20"><DollarSign className="w-3 h-3" /></div>)}
       <div className="absolute top-2 left-2 text-[10px] bg-black/50 text-white px-1.5 py-0.5 rounded backdrop-blur-sm z-20">{gem.hall}</div>
       
-      {/* 👇 [수정 2] 글씨 영역에 z-20 추가 (제일 위로 올라와라!) */}
+      {/* 👇 [수정됨] z-20 추가로 글씨가 가장 위에 뜨게 함 (깜빡임 해결) */}
       <div className="absolute bottom-0 left-0 right-0 p-2 text-white z-20">
         <div className="flex items-center mb-1"><span className="mr-1 text-xs">{rank.icon}</span><span className={`text-[10px] font-bold uppercase ${rank.color}`}>{rank.name}</span></div>
         <h3 className="font-bold text-xs truncate leading-tight mb-0.5 text-shadow">{gem.title}</h3>
@@ -1532,5 +1516,3 @@ export default function App() {
     </div>
   );
 }
-
-```
