@@ -715,6 +715,7 @@ const getRecommendations = (currentGem, allGems) => {
 
 // --- Components ---
 
+// 👇 [수정됨] 글씨 깜빡임 해결된 버전 (z-index 추가됨)
 const InstaGemCard = ({ gem, onClick, isSmall = false }) => {
   const rank = getRank(gem.xp);
   const displayImage = (gem.images && gem.images.length > 0) ? gem.images[0] : (gem.imageUrl || "https://via.placeholder.com/400x600?text=No+Image");
@@ -743,11 +744,16 @@ const InstaGemCard = ({ gem, onClick, isSmall = false }) => {
   return (
     <div onClick={() => onClick(gem)} className="group relative aspect-[3/4] cursor-pointer bg-gray-200 overflow-hidden">
       <img src={displayImage} alt={gem.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onError={(e) => {e.target.src = "https://via.placeholder.com/400x600?text=No+Image"}}/>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
-      <div className={`absolute top-2 right-2 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-sm ${modelStyle.color} ${modelStyle.text}`}>{gem.aiModel || 'AI'}</div>
-      {(gem.affiliateLink || gem.affiliateText) && (<div className="absolute top-8 right-2 bg-green-500 text-white p-0.5 rounded-sm shadow-sm animate-pulse z-10"><DollarSign className="w-3 h-3" /></div>)}
-      <div className="absolute top-2 left-2 text-[10px] bg-black/50 text-white px-1.5 py-0.5 rounded backdrop-blur-sm">{gem.hall}</div>
-      <div className="absolute bottom-0 left-0 right-0 p-2 text-white">
+      
+      {/* 👇 [수정 1] 그라데이션에 z-10 추가 (글씨보다 밑으로 가라!) */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity z-10"></div>
+      
+      <div className={`absolute top-2 right-2 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-sm z-20 ${modelStyle.color} ${modelStyle.text}`}>{gem.aiModel || 'AI'}</div>
+      {(gem.affiliateLink || gem.affiliateText) && (<div className="absolute top-8 right-2 bg-green-500 text-white p-0.5 rounded-sm shadow-sm animate-pulse z-20"><DollarSign className="w-3 h-3" /></div>)}
+      <div className="absolute top-2 left-2 text-[10px] bg-black/50 text-white px-1.5 py-0.5 rounded backdrop-blur-sm z-20">{gem.hall}</div>
+      
+      {/* 👇 [수정 2] 글씨 영역에 z-20 추가 (제일 위로 올라와라!) */}
+      <div className="absolute bottom-0 left-0 right-0 p-2 text-white z-20">
         <div className="flex items-center mb-1"><span className="mr-1 text-xs">{rank.icon}</span><span className={`text-[10px] font-bold uppercase ${rank.color}`}>{rank.name}</span></div>
         <h3 className="font-bold text-xs truncate leading-tight mb-0.5 text-shadow">{gem.title}</h3>
         <div className="flex items-center justify-between">
