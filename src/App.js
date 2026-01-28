@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
-import './App.css';
+// import './App.css'; // Removed to fix build error
 import { 
   LucideHome, LucidePlus, LucideSearch,
   Search, ExternalLink, Info, ShoppingBag, 
@@ -9,7 +9,7 @@ import {
   ShieldAlert, Trash2, Megaphone, Gift, ArrowRight, Smile,
   ChevronDown, ChevronUp, Copy, Terminal, Tag, Mail, LogOut,
   Image as ImageIcon, FileText, Scale, Bot, Cpu, Heart, Coins, Eye, RotateCw, Loader2, HelpCircle, Sparkles, Filter,
-  Video, Music, Code, PenTool, Briefcase
+  Video, Music, Code, PenTool, Briefcase, Upload, Shield // ✅ Added Shield icon
 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { 
@@ -30,11 +30,18 @@ import {
   serverTimestamp, 
   increment 
 } from 'firebase/firestore';
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from 'firebase/storage';
 
 // --- Safe Firebase Init ---
 let app = null;
 let auth = null;
 let db = null;
+let storage = null;
 let appId = 'paran-nemo-default';
 
 try {
@@ -56,6 +63,7 @@ try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+    storage = getStorage(app);
   } else {
     console.log("Running in Demo Mode (No Firebase Config)");
   }
@@ -99,6 +107,14 @@ const AI_MODELS = [
     { id: 'Waiting', label: 'Coming Soon', color: 'bg-gray-300', text: 'text-gray-600' },
     { id: 'Other', label: 'Other', color: 'bg-gray-400', text: 'text-white' }
 ];
+
+// Categories List for Dropdown
+const CATEGORY_LIST = [
+  "Investing", "Social", "Business", "Coding", "Writing", 
+  "Education", "Gaming", "Art", "Video", "Music", 
+  "Shopping", "Travel", "Law", "Pet", "Dream", 
+  "Health", "Assignments", "RealEstate", "Startup", "Other"
+].sort();
 
 // --- Mock Data (30 High Quality Items) ---
 const INITIAL_GEMS = [
@@ -709,7 +725,7 @@ const getRecommendations = (currentGem, allGems) => {
         .filter(g => g.hall === currentGem.hall && !sameModel.find(sm => sm.id === g.id))
         .sort((a, b) => b.xp - a.xp)
         .slice(0, 1);
-    
+     
     return [...sameModel, ...categoryTop];
 };
 
@@ -781,7 +797,8 @@ const TopStarBanner = ({ gem, onClick }) => {
                     <div className="absolute inset-0 bg-gradient-to-r from-yellow-50/50 to-transparent z-0"></div>
                     <div className="w-2/3 p-4 z-10 flex flex-col justify-center">
                         <div className="flex items-center space-x-2 mb-1">
-                            <span className="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-wider">{gem.hall} 1위</span>
+                            {/* 👇 [수정됨] '위' 제거하고 #1 형태로 변경 */}
+                            <span className="px-2 py-0.5 bg-black text-white text-[10px] font-bold rounded-full uppercase tracking-wider">{gem.hall} #1</span>
                             <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${modelStyle.color} ${modelStyle.text}`}>{gem.aiModel}</span>
                         </div>
                         <h3 className="font-black text-lg text-gray-900 leading-tight truncate mb-1">{gem.title}</h3>
@@ -860,6 +877,50 @@ const TermsModal = ({ onClose }) => (
         </div>
     </div>
 );
+
+// 👇 [추가됨] Privacy Modal
+const PrivacyModal = ({ onClose }) => (
+    <div className="fixed inset-0 z-[10003] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+        <div className="bg-white rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl" onClick={e=>e.stopPropagation()}>
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-xl">
+                <h3 className="font-bold text-lg flex items-center text-gray-900"><Shield className="w-5 h-5 mr-2" /> Privacy Policy</h3>
+                <button onClick={onClose}><X className="w-5 h-5 text-gray-500"/></button>
+            </div>
+            <div className="p-6 overflow-y-auto text-sm text-gray-700 leading-relaxed space-y-6">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-blue-800 font-bold text-xs">ℹ️ Paran Nemo minimizes data collection to ensure anonymity.</div>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">1. Collected Information</h4>
+                    <p>We do not require account registration. We only collect the following minimal information for service operation:</p>
+                    <ul className="list-disc pl-4 mt-2 space-y-1">
+                        <li>Uploaded content (Images, text, links)</li>
+                        <li>Anonymized interaction data (Likes, views)</li>
+                        <li>Temporary IP address logs for security and anti-abuse purposes</li>
+                    </ul>
+                </section>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">2. Purpose of Collection</h4>
+                    <p>To provide the platform service, manage content quality, and prevent spam/abuse.</p>
+                </section>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">3. Third-Party Sharing</h4>
+                    <p>We do not share your personal data with third parties unless required by law.</p>
+                </section>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">4. Data Retention</h4>
+                    <p>Content you post is retained until you delete it. Server logs are periodically deleted.</p>
+                </section>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">5. Contact</h4>
+                    <p>For privacy concerns, please contact: contact@parannemo.org</p>
+                </section>
+            </div>
+             <div className="p-4 border-t border-gray-100 bg-gray-50 rounded-b-xl">
+                <button onClick={onClose} className="w-full py-3 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+);
+
 
 const GemDetailModal = ({ gem, allGems, onClose, onSwitchGem, onLike, onReport, onDelete }) => {
   const [showReportOptions, setShowReportOptions] = useState(false);
@@ -1019,24 +1080,59 @@ const GemRegisterModal = ({ onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
         nickname: '', password: '', title: '', description: '', prompt: '', 
         imageMain: '', imageSub1: '', imageSub2: '', imageSub3: '', imageSub4: '',
-        gemLink: '', affiliateLink: '', affiliateText: '', hall: '', 
+        gemLink: '', affiliateLink: '', affiliateText: '', hall: 'Investing', 
         aiModel: 'ChatGPT'
+    });
+    // 👇 [추가됨] 파일 업로드를 위한 state
+    const [imageFiles, setImageFiles] = useState({
+        imageMain: null, imageSub1: null, imageSub2: null, imageSub3: null, imageSub4: null
     });
     const [isAgreed, setIsAgreed] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
-    const handleSubmit = (e) => {
+    // Helper: Image Upload Function
+    const uploadImageFile = async (file) => {
+        if (!file || !storage) return null;
+        try {
+            const fileRef = ref(storage, `artifacts/${appId}/images/${Date.now()}_${file.name}`);
+            await uploadBytes(fileRef, file);
+            return await getDownloadURL(fileRef);
+        } catch (error) {
+            console.error("Upload failed", error);
+            return null;
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!isAgreed) return;
+        setIsUploading(true);
         
-        const images = [formData.imageMain, formData.imageSub1, formData.imageSub2, formData.imageSub3, formData.imageSub4].filter(img => img && img.trim() !== '');
+        // 👇 [수정됨] 이미지 파일 업로드 처리
+        let finalImages = { ...formData };
+        try {
+            if (imageFiles.imageMain) finalImages.imageMain = await uploadImageFile(imageFiles.imageMain);
+            if (imageFiles.imageSub1) finalImages.imageSub1 = await uploadImageFile(imageFiles.imageSub1);
+            if (imageFiles.imageSub2) finalImages.imageSub2 = await uploadImageFile(imageFiles.imageSub2);
+            if (imageFiles.imageSub3) finalImages.imageSub3 = await uploadImageFile(imageFiles.imageSub3);
+            if (imageFiles.imageSub4) finalImages.imageSub4 = await uploadImageFile(imageFiles.imageSub4);
+        } catch (err) {
+            console.error("Image upload error", err);
+            alert("Image upload failed.");
+            setIsUploading(false);
+            return;
+        }
+        
+        const images = [finalImages.imageMain, finalImages.imageSub1, finalImages.imageSub2, finalImages.imageSub3, finalImages.imageSub4].filter(img => img && img.trim() !== '');
         if (images.length === 0) images.push("https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&q=80&w=800");
 
-        const finalHall = formData.hall.trim() || '기타';
-        const finalNickname = formData.nickname.trim() || '익명';
+        const finalHall = formData.hall.trim() || 'Other';
+        const finalNickname = formData.nickname.trim() || 'Anonymous';
         
         onSubmit({ 
-            ...formData, 
+            ...formData,
+            ...finalImages, // Update with URLs
             nickname: finalNickname, 
             hall: finalHall, 
             id: Date.now(), 
@@ -1046,6 +1142,13 @@ const GemRegisterModal = ({ onClose, onSubmit }) => {
             type: 'tool', 
             images: images 
         });
+        setIsUploading(false);
+    };
+
+    const handleFileChange = (e, key) => {
+        if (e.target.files && e.target.files[0]) {
+            setImageFiles(prev => ({ ...prev, [key]: e.target.files[0] }));
+        }
     };
 
     return (
@@ -1064,7 +1167,7 @@ const GemRegisterModal = ({ onClose, onSubmit }) => {
                         
                         <div className="grid grid-cols-2 gap-4">
                             <div><label className="block text-xs font-bold text-gray-500 mb-1">Nickname / SNS ID (Optional)</label><input type="text" placeholder="e.g., Anonymous or @sns_id" className="w-full p-2 border rounded bg-gray-50 text-sm outline-none" onChange={e => setFormData({...formData, nickname: e.target.value})} /></div>
-                            <div><label className="block text-xs font-bold text-gray-500 mb-1 flex items-center text-red-600"><Lock className="w-3 h-3 mr-1"/>Password for Edit/Delete (Required)</label><input type="password" placeholder="4 digits" required maxLength={4} className="w-full p-2 border border-red-200 rounded bg-red-50 text-sm focus:ring-2 focus:ring-red-500 outline-none" onChange={e => setFormData({...formData, password: e.target.value})} /></div>
+                            <div><label className="block text-xs font-bold text-gray-500 mb-1 flex items-center text-red-600"><Lock className="w-3 h-3 mr-1"/>Password (Required)</label><input type="password" placeholder="4 digits" required maxLength={4} className="w-full p-2 border border-red-200 rounded bg-red-50 text-sm focus:ring-2 focus:ring-red-500 outline-none" onChange={e => setFormData({...formData, password: e.target.value})} /></div>
                         </div>
                         <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 text-xs text-amber-800 mt-2">
                             <div className="flex items-center font-bold mb-1"><AlertTriangle className="w-4 h-4 mr-1"/> Note</div>
@@ -1084,7 +1187,14 @@ const GemRegisterModal = ({ onClose, onSubmit }) => {
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 mb-1">Category (Required)</label>
-                                <input type="text" placeholder="e.g., Coding, Stocks, English" required className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white" onChange={e => setFormData({...formData, hall: e.target.value})} />
+                                {/* 👇 [수정됨] 카테고리 Input -> Select 로 변경 */}
+                                <select 
+                                    className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white outline-none"
+                                    value={formData.hall}
+                                    onChange={e => setFormData({...formData, hall: e.target.value})}
+                                >
+                                    {CATEGORY_LIST.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                </select>
                             </div>
                         </div>
 
@@ -1092,22 +1202,30 @@ const GemRegisterModal = ({ onClose, onSubmit }) => {
                             <input type="text" placeholder="Title" required className="w-full p-2 border rounded font-bold" onChange={e => setFormData({...formData, title: e.target.value})} />
                             <textarea placeholder="Description (Detail the advantages and usage of this agent)" required className="w-full p-2 border rounded h-32 resize-none text-sm" onChange={e => setFormData({...formData, description: e.target.value})} />
                             <div className="relative"><textarea placeholder="Prompt or Code to share (Required)" required className="w-full p-2 border border-gray-300 rounded h-24 resize-none text-sm bg-gray-50 focus:bg-white transition-colors" onChange={e => setFormData({...formData, prompt: e.target.value})} /><div className="absolute top-2 right-2 text-xs text-gray-400 pointer-events-none"><Terminal className="w-3 h-3" /></div></div>
+                            
+                            {/* 👇 [수정됨] 이미지 URL 입력 -> 파일 업로드로 변경 */}
                             <div className="space-y-2 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                <label className="block text-xs font-bold text-gray-500 mb-1 flex items-center"><ImageIcon className="w-3 h-3 mr-1"/> Image URLs (Max 5)</label>
-                                <input type="text" placeholder="Main Image URL (Required)" required className="w-full p-2 border rounded text-sm bg-white" onChange={e => setFormData({...formData, imageMain: e.target.value})} />
-                                <div className="grid grid-cols-2 gap-2">
-                                    <input type="text" placeholder="Sub Image 1" className="w-full p-2 border rounded text-xs bg-white" onChange={e => setFormData({...formData, imageSub1: e.target.value})} />
-                                    <input type="text" placeholder="Sub Image 2" className="w-full p-2 border rounded text-xs bg-white" onChange={e => setFormData({...formData, imageSub2: e.target.value})} />
-                                    <input type="text" placeholder="Sub Image 3" className="w-full p-2 border rounded text-xs bg-white" onChange={e => setFormData({...formData, imageSub3: e.target.value})} />
-                                    <input type="text" placeholder="Sub Image 4" className="w-full p-2 border rounded text-xs bg-white" onChange={e => setFormData({...formData, imageSub4: e.target.value})} />
+                                <label className="block text-xs font-bold text-gray-500 mb-1 flex items-center"><ImageIcon className="w-3 h-3 mr-1"/> Upload Images (Max 5)</label>
+                                <div className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-xs w-12 font-bold text-gray-400">Main</span>
+                                        <input type="file" accept="image/*" required onChange={(e) => handleFileChange(e, 'imageMain')} className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'imageSub1')} className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-gray-200"/>
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'imageSub2')} className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-gray-200"/>
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'imageSub3')} className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-gray-200"/>
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'imageSub4')} className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:bg-gray-200"/>
+                                    </div>
                                 </div>
                             </div>
+
                             <input type="url" placeholder="AI Agent Share Link (Required)" required className="w-full p-2 border border-indigo-200 bg-indigo-50 rounded text-sm" onChange={e => setFormData({...formData, gemLink: e.target.value})} />
                         </div>
                         <div className="bg-green-50 p-4 rounded-xl border-2 border-green-200 border-dashed">
                             <h3 className="text-sm font-bold text-green-800 mb-2 flex items-center"><DollarSign className="w-4 h-4 mr-1"/> Revenue Link (Monetization)</h3>
                             <div className="space-y-2">
-                                <input type="text" placeholder="Button Text (e.g. Shop as usual, Support as a bonus! 🎁, Visit My YouTube Channel)" className="w-full p-2 border border-green-300 rounded text-sm bg-white" onChange={e => setFormData({...formData, affiliateText: e.target.value})} />
+                                <input type="text" placeholder="Button Text (e.g. Shop as usual, Support as a bonus! 🎁)" className="w-full p-2 border border-green-300 rounded text-sm bg-white" onChange={e => setFormData({...formData, affiliateText: e.target.value})} />
                                 <input type="url" placeholder="https:// (YouTube, Linktree, Social Bio, Affiliate Link, etc.)" className="w-full p-2 border border-green-300 rounded text-sm bg-white" onChange={e => setFormData({...formData, affiliateLink: e.target.value})} />
                             </div>
                         </div>
@@ -1116,7 +1234,9 @@ const GemRegisterModal = ({ onClose, onSubmit }) => {
                             <div className="flex items-center"><input type="checkbox" id="agree" checked={isAgreed} onChange={e => setIsAgreed(e.target.checked)} className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black cursor-pointer" /><label htmlFor="agree" className="ml-2 text-xs text-gray-600 cursor-pointer select-none">I agree to the Terms of Service and Policy.</label></div>
                             <button type="button" onClick={() => setShowTerms(true)} className="text-[10px] flex items-center bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors"><FileText className="w-3 h-3 mr-1" /> View Terms</button>
                         </div>
-                        <button type="submit" disabled={!isAgreed} className={`w-full py-3 text-white font-bold rounded-xl shadow-lg transition-all ${isAgreed ? 'bg-black hover:bg-gray-800 active:scale-95' : 'bg-gray-300 cursor-not-allowed'}`}>Post</button>
+                        <button type="submit" disabled={!isAgreed || isUploading} className={`w-full py-3 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center ${isAgreed && !isUploading ? 'bg-black hover:bg-gray-800 active:scale-95' : 'bg-gray-300 cursor-not-allowed'}`}>
+                             {isUploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin"/> Uploading Images...</> : "Post"}
+                        </button>
                     </form>
                 </div>
             </div>
@@ -1207,9 +1327,12 @@ export default function App() {
 
   useEffect(() => {
     const initAuth = async () => {
-      if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-        try { await signInWithCustomToken(auth, __initial_auth_token); } catch (e) { console.error("Auth token failed, falling back to anon", e); await signInAnonymously(auth); }
-      } else { await signInAnonymously(auth); }
+      // Direct anonymous sign-in for custom Firebase project to avoid token mismatch errors
+      try {
+        await signInAnonymously(auth);
+      } catch (e) {
+        console.error("Anonymous auth failed", e);
+      }
     };
     initAuth();
     const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -1512,6 +1635,8 @@ export default function App() {
       {isRegisterOpen && <GemRegisterModal onClose={() => setIsRegisterOpen(false)} onSubmit={handleCreateGem} />}
       
       {footerTermsOpen && <TermsModal onClose={() => setFooterTermsOpen(false)} />}
+      {/* 👇 [추가됨] Footer Privacy Modal 연결 */}
+      {footerPrivacyOpen && <PrivacyModal onClose={() => setFooterPrivacyOpen(false)} />}
       
     </div>
   );
