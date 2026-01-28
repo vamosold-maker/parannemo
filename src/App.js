@@ -860,19 +860,34 @@ const TermsModal = ({ onClose }) => (
                 <button onClick={onClose}><X className="w-5 h-5 text-gray-500"/></button>
             </div>
             <div className="p-6 overflow-y-auto text-sm text-gray-700 leading-relaxed space-y-6">
-                <div className="bg-red-50 p-4 rounded-lg border border-red-100 text-red-800 font-bold text-xs">⚠️ This agreement contains clauses indemnifying the operator from legal liability. Users are deemed to agree to this upon using the service.</div>
-                <section><h4 className="font-bold text-gray-900 mb-2">Article 1 (Nature of Service & Indemnification)</h4><p>This service provides an 'intermediary space' for users to share information, and all content and affiliate links are registered directly by users.</p><p className="mt-2 text-red-600 font-bold">The operator does not guarantee the accuracy, reliability, or legality of the posts and is not legally responsible for any financial or mental damages resulting from them.</p></section>
-                <section><h4 className="font-bold text-gray-900 mb-2">Article 2 (Service Changes & Data Deletion)</h4><ul className="list-disc pl-4 space-y-1"><li>The operator may modify, suspend, or terminate the service at any time without prior notice.</li><li>Even if user data (posts, XP points, etc.) is lost due to service termination or server errors, the operator is not responsible for recovery or compensation.</li><li>This service is provided 'As Is', and uninterrupted service is not guaranteed.</li></ul></section>
-                <section><h4 className="font-bold text-gray-900 mb-2">Article 3 (Exclusion of Liability for Investment & Transactions)</h4><ul className="list-disc pl-4 space-y-1"><li>Investment information, revenue verification, and product recommendations in posts are solely the subjective views of the author.</li><li>Losses resulting from investments or purchases made based on this are entirely the user's responsibility.</li></ul></section>
-                <section><h4 className="font-bold text-gray-900 mb-2">Article 4 (User Obligations & Damages)</h4><p className="mb-2">If a user posts illegal information (pornography, fraud, copyright infringement, etc.) and a claim is raised by a third party or the operator gets involved in a legal dispute:</p><ul className="list-disc pl-4 space-y-1 text-red-600 font-bold"><li>The user must indemnify the operator at their own expense and responsibility.</li><li>The user must compensate the operator for all damages (including legal fees).</li></ul></section>
-                <section><h4 className="font-bold text-gray-900 mb-2">Article 5 (Jurisdiction & Governing Law)</h4><p>Lawsuits related to disputes arising from the use of this service shall be under the exclusive jurisdiction of the <strong>US courts having jurisdiction over the operator's residence or address</strong>.</p></section>
+                <div className="bg-red-50 p-4 rounded-lg border border-red-100 text-red-800 font-bold text-xs">⚠️ IMPORTANT: These terms include a mandatory arbitration provision and class action waiver.</div>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">1. DISCLAIMER OF WARRANTIES ("AS IS")</h4>
+                    <p>TO THE FULLEST EXTENT PERMITTED BY LAW, THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. THE OPERATOR DOES NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED OR ERROR-FREE.</p>
+                </section>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">2. LIMITATION OF LIABILITY</h4>
+                    <p className="font-bold text-red-600">IN NO EVENT SHALL THE OPERATOR, ITS AFFILIATES, OR PARTNERS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM YOUR ACCESS TO OR USE OF OR INABILITY TO ACCESS OR USE THE SERVICE.</p>
+                </section>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">3. INDEMNIFICATION</h4>
+                    <p>You agree to defend, indemnify, and hold harmless the Operator from and against any claims, liabilities, damages, losses, and expenses, including without limitation, reasonable legal and accounting fees, arising out of or in any way connected with your access to or use of the Service or your violation of these Terms.</p>
+                </section>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">4. USER CONTENT & RESPONSIBILITY</h4>
+                    <p>You are solely responsible for all content you post. Paran Nemo acts solely as a passive conduit for your online distribution and publication of User Content. We assume no liability for any content posted by you or any third party.</p>
+                </section>
+                <section>
+                    <h4 className="font-bold text-gray-900 mb-2">5. GOVERNING LAW & JURISDICTION</h4>
+                    <p>These Terms shall be governed by and construed in accordance with the laws of the United States, without regard to its conflict of law provisions. You agree to submit to the personal jurisdiction of the courts located within the Operator's residence for any actions for which we retain the right to seek injunctive or other equitable relief.</p>
+                </section>
                  <section>
-                    <h4 className="font-bold text-gray-900 mb-2">Article 6 (Idea Sharing & Theft Indemnification)</h4>
-                    <p>Ideas and content registered on the service are considered 'public information'. The operator is not responsible for any profit infringement or damages caused by third parties imitating or stealing them, and the responsibility for protecting ideas lies entirely with the author.</p>
+                    <h4 className="font-bold text-gray-900 mb-2">6. AGE RESTRICTION</h4>
+                    <p>You must be at least 18 years old to use this Service. By using this Service, you warrant that you are at least 18 years of age.</p>
                 </section>
             </div>
             <div className="p-4 border-t border-gray-100 bg-gray-50 rounded-b-xl">
-                <button onClick={onClose} className="w-full py-3 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors">I confirm and agree to the above.</button>
+                <button onClick={onClose} className="w-full py-3 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors">I HAVE READ, UNDERSTOOD, AND AGREE TO THESE TERMS.</button>
             </div>
         </div>
     </div>
@@ -887,31 +902,26 @@ const PrivacyModal = ({ onClose }) => (
                 <button onClick={onClose}><X className="w-5 h-5 text-gray-500"/></button>
             </div>
             <div className="p-6 overflow-y-auto text-sm text-gray-700 leading-relaxed space-y-6">
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-blue-800 font-bold text-xs">ℹ️ Paran Nemo minimizes data collection to ensure anonymity.</div>
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-blue-800 font-bold text-xs">ℹ️ Paran Nemo prioritizes anonymity but maintains strict security logs.</div>
                 <section>
-                    <h4 className="font-bold text-gray-900 mb-2">1. Collected Information</h4>
-                    <p>We do not require account registration. We only collect the following minimal information for service operation:</p>
-                    <ul className="list-disc pl-4 mt-2 space-y-1">
-                        <li>Uploaded content (Images, text, links)</li>
-                        <li>Anonymized interaction data (Likes, views)</li>
-                        <li>Temporary IP address logs for security and anti-abuse purposes</li>
-                    </ul>
+                    <h4 className="font-bold text-gray-900 mb-2">1. NO PERSONAL DATA COLLECTION</h4>
+                    <p>We do not require user registration. We generally do not collect personally identifiable information (PII) such as names, addresses, or phone numbers, except when voluntarily provided by you in public posts.</p>
                 </section>
                 <section>
-                    <h4 className="font-bold text-gray-900 mb-2">2. Purpose of Collection</h4>
-                    <p>To provide the platform service, manage content quality, and prevent spam/abuse.</p>
+                    <h4 className="font-bold text-gray-900 mb-2">2. AUTOMATIC DATA COLLECTION</h4>
+                    <p>For security and anti-abuse purposes, we may automatically log your IP address, browser type, and access times. This data is used solely for protecting the integrity of the Service and is deleted periodically.</p>
                 </section>
                 <section>
-                    <h4 className="font-bold text-gray-900 mb-2">3. Third-Party Sharing</h4>
-                    <p>We do not share your personal data with third parties unless required by law.</p>
+                    <h4 className="font-bold text-gray-900 mb-2">3. THIRD-PARTY LINKS & LIABILITY</h4>
+                    <p>This Service contains links to third-party websites (affiliate links, tools). We are not responsible for the privacy practices or content of such third-party sites. Accessing them is at your own risk.</p>
                 </section>
                 <section>
-                    <h4 className="font-bold text-gray-900 mb-2">4. Data Retention</h4>
-                    <p>Content you post is retained until you delete it. Server logs are periodically deleted.</p>
+                    <h4 className="font-bold text-gray-900 mb-2">4. DATA SECURITY DISCLAIMER</h4>
+                    <p>While we strive to use commercially acceptable means to protect your information, we cannot guarantee its absolute security. You acknowledge that you provide information at your own risk.</p>
                 </section>
                 <section>
-                    <h4 className="font-bold text-gray-900 mb-2">5. Contact</h4>
-                    <p>For privacy concerns, please contact: contact@parannemo.org</p>
+                    <h4 className="font-bold text-gray-900 mb-2">5. CHANGES TO THIS POLICY</h4>
+                    <p>We may update our Privacy Policy from time to time. You are advised to review this page periodically for any changes.</p>
                 </section>
             </div>
              <div className="p-4 border-t border-gray-100 bg-gray-50 rounded-b-xl">
